@@ -1,0 +1,138 @@
+SCRIPT SW-08
+
+enable
+configure terminal
+hostname SW-08
+banner motd "ACESSO AUTORIZADO SOMENTE AOS PROFESSORES E INTEGRANTES DA CASA BOLTON"
+enable secret SenhadaEnable
+username Wanderson.Santo privilege 15 secret Wanderson@15
+username Willian.Ladeira privilege 15 secret Willian@15
+username Rai.alves privilege 15 secret Rai@15
+username Gabriel.Silva privilege 15 secret Gabriel@15
+ip domain-name Grupo8.local
+crypto key generate rsa general-keys modulus 1024
+line vty 0 15
+login local
+transport input ssh
+exec-timeout 5
+exit
+line console 0
+password SenhadaConsole
+login local
+exit
+service password-encryption
+vlan 18
+name VLAN_18
+vlan 108
+name VLAN_108
+interface fastEthernet 0/1
+switchport mode access
+switchport access vlan 18
+description PC 01
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 18
+description PC 02
+interface fastEthernet 0/8
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk allowed vlan 18,99,108
+interface vlan 108
+ip address 192.168.247.253 255.255.255.0 
+description INTERFACE DE GERENCIAMENTO
+no shutdown
+exit
+ip default-gateway 192.168.247.1
+do wr 
+
+
+SCRIPT SW-CORE
+
+
+enable
+configure terminal
+hostname SW-CORE 
+banner motd "ACESSO AUTORIZADO SOMENTE AOS PROFESSORES E INTEGRANTES DA CASA BOLTON"
+enable secret SenhadaEnable
+username Wanderson.Santo privilege 15 secret Wanderson@15
+username Willian.Ladeira privilege 15 secret Willian@15
+username Rai.alves privilege 15 secret Rai@15
+username Gabriel.Silva privilege 15 secret Gabriel@15
+ip domain-name Grupo8.local
+crypto key generate rsa general-keys modulus 1024
+line vty 0 15
+login local
+transport input ssh
+exec-timeout 5
+exit
+line console 0
+password SenhadaConsole
+login local
+exit
+service password-encryption
+vlan 18
+name VLAN_18
+vlan 108
+name VLAN_108
+interface fastEthernet 0/2
+switchport mode access
+switchport access vlan 108
+description VLAN108 CONEXAO COM SRV-01
+interface f0/1
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk allowed vlan 18,99,108
+exit
+interface f0/8
+switchport mode trunk
+switchport trunk native vlan 99
+switchport trunk allowed vlan 18,99,108
+interface vlan 108
+ip address 192.168.247.254 255.255.255.0 
+description INTERFACE DE GERENCIAMENTO
+no shutdown
+exit
+ip default-gateway 192.168.247.1
+do wr 
+
+
+
+SCRIPT RT-01
+
+
+enable
+configure terminal
+hostname RT-08
+banner motd "ACESSO AUTORIZADO SOMENTE AOS PROFESSORES E INTEGRANTES DA CASA BOLTON"
+enable secret SenhadaEnable
+username Wanderson.Santo privilege 15 secret Wanderson@15
+username Willian.Ladeira privilege 15 secret Willian@15
+username Rai.alves privilege 15 secret Rai@15
+username Gabriel.Silva privilege 15 secret Gabriel@15
+ip domain-name Grupo8.local
+crypto key generate rsa general-keys modulus 1024
+security passwords min-length 8
+login block-for 240 attempts 7 within 10
+line vty 0 15
+login local
+transport input ssh
+exec-timeout 4
+exit
+line console 0
+password SenhadaConsole
+login local
+exit
+service password-encryption
+interface gigabitEthernet 0/1
+no shutdown
+interface gigabitEthernet 0/1.18
+encapsulation dot1q 18
+ip address 192.168.18.1 255.255.255.0
+description VLAN18 CONEXAO COM SW-CORE
+ip helper-address 192.168.247.5
+interface gigabitEthernet 0/1.108
+encapsulation dot1q 108
+ip address 192.168.247.1 255.255.255.0
+description VLAN 108 CONEXAO COM SW-CORE
+ip helper-address 192.168.247.5
+do wr
